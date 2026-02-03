@@ -71,10 +71,11 @@ def parse_graphs(graph_fp):
     return graphs
 
 
-def get_k_disc_subgraphs(freq_graphs, db_graphs, k=100):
+def get_k_disc_subgraphs(freq_graphs, db_graphs, k=50):
     freq_graphs.sort(reverse=True, key=lambda x: x.attrs["support"])
 
-    freq_graphs = freq_graphs[:150]  # TEST:
+    if len(freq_graphs) > 100:
+        freq_graphs = freq_graphs[:100]
 
     if len(freq_graphs) <= k:
         return freq_graphs
