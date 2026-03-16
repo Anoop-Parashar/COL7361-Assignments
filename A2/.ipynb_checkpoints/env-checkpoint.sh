@@ -1,0 +1,1 @@
+pip install numpy==1.26.4 scikit-learn==1.3.2 matplotlib==3.8.2 yellowbrick==1.5
