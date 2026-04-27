@@ -38,7 +38,6 @@ from torch_geometric.data import InMemoryDataset
 # Dataset A / B  –  node classification
 # ─────────────────────────────────────────────────────────────────────────────
 
-
 class COL761NodeDataset(InMemoryDataset):
     """
     PyG InMemoryDataset for COL761 node-classification tasks (datasets A and B).
@@ -86,18 +85,15 @@ class COL761NodeDataset(InMemoryDataset):
         return int(self[0].y.max().item()) + 1
 
     def __repr__(self) -> str:
-        return (
-            f"COL761NodeDataset(name={self.name}, "
-            f"nodes={self[0].num_nodes}, "
-            f"edges={self[0].num_edges}, "
-            f"classes={self.num_classes})"
-        )
+        return (f"COL761NodeDataset(name={self.name}, "
+                f"nodes={self[0].num_nodes}, "
+                f"edges={self[0].num_edges}, "
+                f"classes={self.num_classes})")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Dataset C  –  link prediction
 # ─────────────────────────────────────────────────────────────────────────────
-
 
 def _load_edge_list(path: str) -> torch.Tensor:
     """Read a tab-separated edge-list file → LongTensor [E, 2]."""
@@ -120,9 +116,9 @@ class COL761LinkDataset:
 
         # --- edge lists
         for split in ("train", "valid", "test"):
-            pos_path = os.path.join(ds_dir, f"{split}_pos.txt")
+            pos_path      = os.path.join(ds_dir, f"{split}_pos.txt")
             neg_hard_path = os.path.join(ds_dir, f"{split}_neg_hard.npy")
-            neg_path = os.path.join(ds_dir, f"{split}_neg.txt")
+            neg_path      = os.path.join(ds_dir, f"{split}_neg.txt")
 
             if os.path.isfile(pos_path):
                 setattr(self, f"{split}_pos", _load_edge_list(pos_path))
@@ -142,8 +138,10 @@ class COL761LinkDataset:
                 break
 
         if ref_pos is not None:
-            ref_edge = ref_pos.t()  # [2, M]
-            self.edge_index = torch.cat([ref_edge, ref_edge[[1, 0]]], dim=1)  # [2, 2M]
+            ref_edge = ref_pos.t()                                   # [2, M]
+            self.edge_index = torch.cat(
+                [ref_edge, ref_edge[[1, 0]]], dim=1
+            )                                                        # [2, 2M]
         else:
             self.edge_index = torch.zeros((2, 0), dtype=torch.long)
 
@@ -161,18 +159,15 @@ class COL761LinkDataset:
             self.x: torch.Tensor = feat["entity_embedding"]
 
     def __repr__(self) -> str:
-        return (
-            f"COL761LinkDataset("
-            f"nodes={self.num_nodes}, "
-            f"train_pos={self.train_pos.shape[0]}, "
-            f"valid_pos={self.valid_pos.shape[0]})"
-        )
+        return (f"COL761LinkDataset("
+                f"nodes={self.num_nodes}, "
+                f"train_pos={self.train_pos.shape[0]}, "
+                f"valid_pos={self.valid_pos.shape[0]})")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Public factory
 # ─────────────────────────────────────────────────────────────────────────────
-
 
 def load_dataset(dataset: str, data_dir: str):
     """
@@ -205,15 +200,14 @@ def load_dataset(dataset: str, data_dir: str):
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
 
-
 def _print_stats(dataset: str, ds) -> None:
-    print(f"\n{'=' * 52}")
+    print(f"\n{'='*52}")
     print(f"  Dataset {dataset}")
-    print(f"{'=' * 52}")
+    print(f"{'='*52}")
 
     if isinstance(ds, COL761NodeDataset):
         data = ds[0]
-        n_labeled = data.labeled_nodes.shape[0]
+        n_labeled   = data.labeled_nodes.shape[0]
         n_unlabeled = data.num_nodes - n_labeled
         print(f"  {ds}")
         print(f"  Node features   : {data.x.shape[1]}")
@@ -225,14 +219,8 @@ def _print_stats(dataset: str, ds) -> None:
 
     else:  # COL761LinkDataset
         print(f"  {ds}")
-        for attr in (
-            "train_pos",
-            "train_neg",
-            "valid_pos",
-            "valid_neg",
-            "test_pos",
-            "test_neg",
-        ):
+        for attr in ("train_pos", "train_neg", "valid_pos", "valid_neg",
+                     "test_pos", "test_neg"):
             if hasattr(ds, attr):
                 print(f"  {attr:<15} : {getattr(ds, attr).shape}")
         if hasattr(ds, "x"):
@@ -247,15 +235,12 @@ def main():
         description="Load COL761 A3 assignment datasets A, B, or C."
     )
     parser.add_argument(
-        "--dataset",
-        required=True,
-        choices=["A", "B", "C"],
-        help="Which dataset to load: A, B, or C",
+        "--dataset", required=True, choices=["A", "B", "C"],
+        help="Which dataset to load: A, B, or C"
     )
     parser.add_argument(
-        "--data_dir",
-        required=True,
-        help="Absolute path to the directory containing A/, B/, C/ subfolders",
+        "--data_dir", required=True,
+        help="Absolute path to the directory containing A/, B/, C/ subfolders"
     )
     args = parser.parse_args()
 
